@@ -1,0 +1,4 @@
+models/
+scripts/__pycache__/
+*.pyc
+config.json
