@@ -262,6 +262,10 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',sans-serif;
 .te-btn.danger:hover{background:var(--danger-bg);border-color:var(--danger);color:var(--danger)}
 .te-btn.active{border-color:var(--pri);color:var(--acc);background:var(--pri-bg)}
 #chips-outer{flex:1;display:flex;flex-direction:column;gap:0;overflow:hidden;min-height:0}
+#tag-textarea{flex:1;resize:none;background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;
+  color:var(--txt);font-size:14px;font-family:'Segoe UI',sans-serif;padding:10px;outline:none;
+  line-height:1.6;display:none}
+#tag-textarea:focus{border-color:var(--pri)}
 #chips-area{flex:1;overflow-y:auto;padding:10px;
   background:var(--bg3);border:1px solid var(--bd2);border-radius:8px 8px 0 0;
   display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;cursor:text}
@@ -365,6 +369,7 @@ input[type=range]{accent-color:var(--sel)}
         <button class="tr-btn" onclick="addTrigger('prepend')">先頭</button>
         <button class="tr-btn" onclick="addTrigger('append')">末尾</button>
         <div style="flex:1"></div>
+        <button id="txt-toggle" class="te-btn" onclick="toggleTextMode()">テキスト</button>
         <button class="te-btn danger" onclick="clearAllTags()">全削除</button>
         <button class="te-btn ok" onclick="saveSingle()">保存</button>
       </div>
@@ -376,6 +381,7 @@ input[type=range]{accent-color:var(--sel)}
             onkeydown="onTagKey(event)" />
         </div>
       </div>
+      <textarea id="tag-textarea" oninput="onTextAreaInput()"></textarea>
     </div>
 
   </div>
@@ -635,7 +641,37 @@ async function multiRmChip(tag){
   await showMultiChips();
 }
 
+let textMode=false;
+function toggleTextMode(){
+  textMode=!textMode;
+  const btn=document.getElementById('txt-toggle');
+  const outer=document.getElementById('chips-outer');
+  const ta=document.getElementById('tag-textarea');
+  btn.classList.toggle('active',textMode);
+  if(textMode){
+    outer.style.display='none';
+    ta.style.display='block';
+    ta.value=currentTags.join(', ');
+    ta.focus();
+  }else{
+    ta.style.display='none';
+    outer.style.display='flex';
+    const parsed=parseTags(ta.value);
+    if(parsed.join(',')||!currentTags.length){
+      currentTags=parsed;isDirty=true;
+      if(checked.size>=2&&selected)pendingTags[selected]=[...currentTags];
+      else if(selected)pendingTags[selected]=[...currentTags];
+    }
+    renderChips();
+  }
+}
+function onTextAreaInput(){
+  currentTags=parseTags(document.getElementById('tag-textarea').value);
+  isDirty=true;
+  if(selected)pendingTags[selected]=[...currentTags];
+}
 function renderChips(){
+  if(textMode){document.getElementById('tag-textarea').value=currentTags.join(', ');return;}
   const area=document.getElementById('chips-area');area.innerHTML='';
   currentTags.forEach(tag=>{
     const chip=document.createElement('div');chip.className='chip';
