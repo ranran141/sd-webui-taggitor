@@ -932,6 +932,23 @@ def register_routes(app: FastAPI):
             folder = filedialog.askdirectory(title="画像フォルダを選択")
             root.destroy()
             return JSONResponse({"dir": folder or ""})
+        except Exception:
+            pass
+        try:
+            import subprocess
+            ps = (
+                'Add-Type -AssemblyName System.Windows.Forms;'
+                '$d=New-Object System.Windows.Forms.FolderBrowserDialog;'
+                '$d.Description="画像フォルダを選択";'
+                '$d.ShowNewFolderButton=$false;'
+                'if($d.ShowDialog() -eq "OK"){$d.SelectedPath}'
+            )
+            result = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", ps],
+                capture_output=True, text=True, timeout=60
+            )
+            folder = result.stdout.strip()
+            return JSONResponse({"dir": folder or ""})
         except Exception as e:
             return JSONResponse({"dir": "", "error": str(e)})
 
@@ -955,6 +972,24 @@ def register_routes(app: FastAPI):
             )
             root.destroy()
             return JSONResponse({"files": list(files)})
+        except Exception:
+            pass
+        try:
+            import subprocess
+            ps = (
+                'Add-Type -AssemblyName System.Windows.Forms;'
+                '$d=New-Object System.Windows.Forms.OpenFileDialog;'
+                '$d.Title="画像ファイルを選択";'
+                '$d.Filter="画像ファイル|*.png;*.jpg;*.jpeg;*.webp;*.gif;*.bmp|すべて|*.*";'
+                '$d.Multiselect=$true;'
+                'if($d.ShowDialog() -eq "OK"){$d.FileNames -join "`n"}'
+            )
+            result = subprocess.run(
+                ["powershell", "-NoProfile", "-Command", ps],
+                capture_output=True, text=True, timeout=60
+            )
+            files = [f for f in result.stdout.strip().splitlines() if f]
+            return JSONResponse({"files": files})
         except Exception as e:
             return JSONResponse({"files": [], "error": str(e)})
 
