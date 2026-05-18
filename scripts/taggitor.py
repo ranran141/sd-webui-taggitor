@@ -2,7 +2,7 @@ import json
 import mimetypes
 import threading
 from pathlib import Path
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from modules.script_callbacks import on_app_started, on_ui_tabs
 
@@ -10,6 +10,8 @@ EXTENSION_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_FILE = EXTENSION_ROOT / "config.json"
 MODELS_DIR = EXTENSION_ROOT / "models"
 MODELS_DIR.mkdir(exist_ok=True)
+TEMP_DIR = EXTENSION_ROOT / "tmp"
+TEMP_DIR.mkdir(exist_ok=True)
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 
 TAGGER_MODELS = {
@@ -485,7 +487,7 @@ document.addEventListener('drop',async e=>{
     if(mode==='single'){simLoad(paths[0]);return;}
     await addPathsToGrid(paths);return;
   }
-  if(e.dataTransfer.files.length>0&&mode==='single')openFilePicker();
+  if(e.dataTransfer.files.length>0&&mode==='single'){simLoadFile(e.dataTransfer.files[0]);return;}
 });
 
 async function addPathsToGrid(paths){
@@ -517,8 +519,24 @@ async function openFilePicker(){
 function handleSimDrop(e){
   e.preventDefault();e.stopPropagation();
   const f=e.dataTransfer.files[0];
-  if(f&&f.path){simLoad(f.path);return;}
+  if(f){simLoadFile(f);return;}
   openFilePicker();
+}
+async function simLoadFile(file){
+  const blobUrl=URL.createObjectURL(file);
+  const img=document.getElementById('sim-img');
+  img.src=blobUrl;img.style.display='block';
+  document.getElementById('sim-drop').style.display='none';
+  document.getElementById('sim-filename').textContent=file.name;
+  selected=null;currentTags=[];isDirty=false;
+  showPane('single');renderChips();
+  try{
+    const fd=new FormData();fd.append('file',file);
+    const r=await fetch(`${A}/upload-temp`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.error)return toast(d.error,'err');
+    selected=d.path;
+  }catch(e){toast(`エラー: ${e.message}`,'err');}
 }
 
 // ── 単体画像 ──────────────────────────────────────────
@@ -956,6 +974,14 @@ def register_routes(app: FastAPI):
             return JSONResponse({"dir": folder or ""})
         except Exception as e:
             return JSONResponse({"dir": "", "error": str(e)})
+
+    @app.post("/tag-editor/api/upload-temp")
+    async def upload_temp(file: UploadFile = File(...)):
+        if Path(file.filename).suffix.lower() not in IMAGE_EXTS:
+            return JSONResponse({"error": "未対応のファイル形式"})
+        dest = TEMP_DIR / file.filename
+        dest.write_bytes(await file.read())
+        return JSONResponse({"path": str(dest)})
 
     @app.post("/tag-editor/api/validate-paths")
     async def validate_paths(req: Request):

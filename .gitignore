@@ -1,4 +1,5 @@
 models/
+tmp/
 scripts/__pycache__/
 *.pyc
 config.json
