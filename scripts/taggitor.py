@@ -885,9 +885,7 @@ async function runAutotag(){
   if(mode==='single'){
     if(selected&&pendingTags[selected]!==undefined){
       currentTags=[...pendingTags[selected]];
-      await saveSingle(true);
       renderChips();
-      toast('タグを保存しました','ok');
     }
   }else{
     renderGrid();
