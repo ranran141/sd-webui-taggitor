@@ -478,7 +478,7 @@ document.addEventListener('drop',async e=>{
     if(mode==='single'){simLoad(paths[0]);return;}
     await addPathsToGrid(paths);return;
   }
-  if(e.dataTransfer.files.length>0)toast('エクスプローラーからD&Dすると追加できます');
+  if(e.dataTransfer.files.length>0&&mode==='single')openFilePicker();
 });
 
 async function addPathsToGrid(paths){
@@ -510,7 +510,8 @@ async function openFilePicker(){
 function handleSimDrop(e){
   e.preventDefault();e.stopPropagation();
   const paths=parsePaths(e.dataTransfer.getData('text/uri-list')||'');
-  if(paths.length>0)simLoad(paths[0]);
+  if(paths.length>0){simLoad(paths[0]);return;}
+  if(e.dataTransfer.files.length>0)openFilePicker();
 }
 
 // ── 単体画像 ──────────────────────────────────────────
