@@ -340,7 +340,8 @@ input[type=range]{accent-color:var(--sel)}
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
       <span>クリックして画像を選択<br>またはここにD&amp;D</span>
     </div>
-    <img id="sim-img" onclick="openFilePicker()" title="クリックして別の画像を選択" />
+    <img id="sim-img" onclick="openFilePicker()" title="クリックして別の画像を選択"
+      ondragover="event.preventDefault()" ondrop="handleSimDrop(event)" />
   </div>
   <div id="gp">
     <div id="gtb">
@@ -504,6 +505,12 @@ async function openFilePicker(){
     if(mode==='single'){simLoad(d.files[0]);return;}
     await addPathsToGrid(d.files);
   }catch(e){toast(`エラー: ${e.message}`,'err');}
+}
+
+function handleSimDrop(e){
+  e.preventDefault();e.stopPropagation();
+  const paths=parsePaths(e.dataTransfer.getData('text/uri-list')||'');
+  if(paths.length>0)simLoad(paths[0]);
 }
 
 // ── 単体画像 ──────────────────────────────────────────
