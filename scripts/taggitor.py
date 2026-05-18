@@ -303,6 +303,11 @@ input[type=range]{accent-color:var(--sel)}
 #toast.show{transform:translateY(0);opacity:1}
 #toast.ok{border-color:var(--ok);color:var(--ok)}
 #toast.err{border-color:var(--danger);color:var(--danger)}
+body.single-mode #single-hdr{display:none}
+body.single-mode #tag-input-wrap{display:none}
+body.single-mode #txt-toggle{display:none}
+body.single-mode .chip-x{display:none}
+body.single-mode #tag-textarea{pointer-events:none;opacity:.7}
 </style>
 </head>
 <body>
@@ -398,6 +403,7 @@ let pendingTags={}; // path → tags[], auto-tag results not yet saved to disk
 
 // ── モード切り替え ────────────────────────────────────
 let mode='dir';
+document.body.classList.remove('single-mode');
 // モードごとの保存状態
 const modeState={
   dir:{selected:null,currentTags:[],isDirty:false,checked:new Set(),images:[],pendingTags:{}},
@@ -422,6 +428,7 @@ function setMode(m){
   mode=m;
   restoreState(m);
   const isDir=m==='dir';
+  document.body.classList.toggle('single-mode',!isDir);
   // タブ・パネル切り替え
   document.getElementById('tab-dir').classList.toggle('active',isDir);
   document.getElementById('tab-single').classList.toggle('active',!isDir);
@@ -509,9 +516,9 @@ async function openFilePicker(){
 
 function handleSimDrop(e){
   e.preventDefault();e.stopPropagation();
-  const paths=parsePaths(e.dataTransfer.getData('text/uri-list')||'');
-  if(paths.length>0){simLoad(paths[0]);return;}
-  if(e.dataTransfer.files.length>0)openFilePicker();
+  const f=e.dataTransfer.files[0];
+  if(f&&f.path){simLoad(f.path);return;}
+  openFilePicker();
 }
 
 // ── 単体画像 ──────────────────────────────────────────
@@ -875,11 +882,20 @@ async function runAutotag(){
   setTimeout(()=>{
     wrap.style.display='none';bar.style.width='0%';btn.disabled=false;
   },1200);
-  renderGrid();
-  if(selected&&pendingTags[selected]!==undefined){
-    currentTags=[...pendingTags[selected]];isDirty=true;renderChips();
+  if(mode==='single'){
+    if(selected&&pendingTags[selected]!==undefined){
+      currentTags=[...pendingTags[selected]];
+      await saveSingle(true);
+      renderChips();
+      toast('タグを保存しました','ok');
+    }
+  }else{
+    renderGrid();
+    if(selected&&pendingTags[selected]!==undefined){
+      currentTags=[...pendingTags[selected]];isDirty=true;renderChips();
+    }
+    if(checked.size>=2)showMultiChips();
   }
-  if(checked.size>=2)showMultiChips();
 }
 
 // ── ユーティリティ ────────────────────────────────────
