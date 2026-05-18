@@ -317,8 +317,8 @@ body.single-mode #tag-textarea{pointer-events:none;opacity:.7}
 <div id="hdr">
   <div id="hdr-r1">
     <div style="display:flex">
-      <button id="tab-single" class="mode-tab" onclick="setMode('single')">単体画像</button>
-      <button id="tab-dir" class="mode-tab active" onclick="setMode('dir')">フォルダ</button>
+      <button id="tab-single" class="mode-tab" onclick="setMode('single')">参照</button>
+      <button id="tab-dir" class="mode-tab active" onclick="setMode('dir')">編集</button>
     </div>
     <div id="dir-row" style="display:flex;gap:6px;align-items:center;margin-left:8px">
       <input id="dir-input" type="text" placeholder="フォルダパスを入力して Enter..."
@@ -333,7 +333,7 @@ body.single-mode #tag-textarea{pointer-events:none;opacity:.7}
     <input type="range" id="at-thr" min="0.1" max="0.95" step="0.05" value="0.35"
       oninput="document.getElementById('at-thr-disp').textContent=parseFloat(this.value).toFixed(2)">
     <span id="at-thr-disp">0.35</span>
-    <button id="at-run" onclick="runAutotag()">タグ付け</button>
+    <button id="at-run" onclick="runAutotag()">解析</button>
     <div id="at-progress-wrap"><div id="at-progress-bar"></div></div>
   </div>
 </div>
