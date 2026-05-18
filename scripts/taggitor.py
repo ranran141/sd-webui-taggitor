@@ -495,10 +495,15 @@ async function addPathsToGrid(paths){
 
 // ── ファイルピッカー ──────────────────────────────────
 async function openFilePicker(){
-  const r=await fetch(`${A}/pick-files`);const d=await r.json();
-  if(!d.files||d.files.length===0)return;
-  if(mode==='single'){simLoad(d.files[0]);return;}
-  await addPathsToGrid(d.files);
+  try{
+    const r=await fetch(`${A}/pick-files`);
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    if(d.error)return toast(`エラー: ${d.error}`,'err');
+    if(!d.files||d.files.length===0)return;
+    if(mode==='single'){simLoad(d.files[0]);return;}
+    await addPathsToGrid(d.files);
+  }catch(e){toast(`エラー: ${e.message}`,'err');}
 }
 
 // ── 単体画像 ──────────────────────────────────────────
@@ -524,19 +529,28 @@ function resetSim(){
 
 // ── フォルダ ──────────────────────────────────────────
 async function pickDir(){
-  const r=await fetch(`${A}/pick-dir`);const d=await r.json();
-  if(d.dir){document.getElementById('dir-input').value=d.dir;loadDir();}
+  try{
+    const r=await fetch(`${A}/pick-dir`);
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    if(d.error)return toast(`エラー: ${d.error}`,'err');
+    if(d.dir){document.getElementById('dir-input').value=d.dir;loadDir();}
+  }catch(e){toast(`エラー: ${e.message}`,'err');}
 }
 async function loadDir(){
   const dir=document.getElementById('dir-input').value.trim();
   if(!dir)return toast('フォルダを指定してください','err');
   saveConfig({last_dir:dir});
-  const r=await fetch(`${A}/images?dir=${enc(dir)}`);const d=await r.json();
-  if(d.error)return toast(d.error,'err');
-  images=d.images;checked.clear();
-  selected=null;
-  renderGrid();
-  updSel();
+  try{
+    const r=await fetch(`${A}/images?dir=${enc(dir)}`);
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    if(d.error)return toast(d.error,'err');
+    images=d.images;checked.clear();
+    selected=null;
+    renderGrid();
+    updSel();
+  }catch(e){toast(`エラー: ${e.message}`,'err');}
 }
 
 // ── トリガーワード ────────────────────────────────────
@@ -873,13 +887,19 @@ function toast(msg,type=''){
 }
 
 (async()=>{
-  await loadModels();
-  const r=await fetch(`${A}/config`);const cfg=await r.json();
-  if(cfg.selected_models&&cfg.selected_models[0]&&modelStatus[cfg.selected_models[0]])
-    selectedModel=cfg.selected_models[0];
-  renderModelSel();
-  if(cfg.last_dir){document.getElementById('dir-input').value=cfg.last_dir;await loadDir();}
-  else{showPane('single');renderChips();}
+  try{
+    await loadModels();
+    const r=await fetch(`${A}/config`);
+    if(!r.ok)throw new Error(`API ${r.status}`);
+    const cfg=await r.json();
+    if(cfg.selected_models&&cfg.selected_models[0]&&modelStatus[cfg.selected_models[0]])
+      selectedModel=cfg.selected_models[0];
+    renderModelSel();
+    if(cfg.last_dir){document.getElementById('dir-input').value=cfg.last_dir;await loadDir();}
+    else{showPane('single');renderChips();}
+  }catch(e){
+    toast(`API接続エラー: ${e.message}`,'err');
+  }
 })();
 </script>
 </body>
@@ -903,7 +923,7 @@ def register_routes(app: FastAPI):
         _save_config(await req.json()); return JSONResponse({"ok": True})
 
     @app.get("/tag-editor/api/pick-dir")
-    async def pick_dir():
+    def pick_dir():
         try:
             import tkinter as tk
             from tkinter import filedialog
@@ -923,7 +943,7 @@ def register_routes(app: FastAPI):
         return JSONResponse({"valid": valid})
 
     @app.get("/tag-editor/api/pick-files")
-    async def pick_files():
+    def pick_files():
         try:
             import tkinter as tk
             from tkinter import filedialog
