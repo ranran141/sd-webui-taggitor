@@ -2,17 +2,19 @@
 
 Stable Diffusion WebUI Forge NEO 向けのタグ付け・編集拡張機能です
 
-![screenshot](screenshot.png)
-
 ## 機能
 
 ### Preview（参照）モード
+
+![preview](pre.png)
 
 - 画像からDanbooruタグを解析・表示
 - 画像からローカルLLMでキャプション生成(要LM Studio)
 - 結果をクリップボードにコピー、またはtxt2imgに送信
 
 ### Edit（編集）モード
+
+![edit](edit.png)
 
 - フォルダ指定で一括タグ付け
 - チップ形式でタグを確認・削除
