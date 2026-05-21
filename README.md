@@ -1,6 +1,6 @@
 # sd-webui-taggitor
 
-Stable Diffusion WebUI Forge NEO 向けのタグ管理拡張機能です
+Stable Diffusion WebUI Forge NEO 向けのタグ付け・編集拡張機能です
 
 ![screenshot](screenshot.png)
 
@@ -8,14 +8,13 @@ Stable Diffusion WebUI Forge NEO 向けのタグ管理拡張機能です
 
 ### Preview（参照）モード
 
-- 画像をクリックまたはD&Dで読み込み
-- **Danbooru**: WD14 ONNXモデルでタグを解析・表示（閾値調整可）
-- **Natural**: LM Studio（ローカルLLM）でキャプション生成
-- 結果をクリップボードにコピー、またはtxt2imgプロンプトに送信
+- 画像からDanbooruタグを解析・表示
+- 画像からローカルLLMでキャプション生成
+- 結果をクリップボードにコピー、またはtxt2imgに送信
 
 ### Edit（編集）モード
 
-- **フォルダ指定で一括タグ付**: フォルダ内の全画像にまとめてタグを追加・編集
+- フォルダ指定で一括タグ付
 - チップ形式でタグを確認・削除
 - 下部の入力欄からタグを一括追加
 - **Trigger words**: フッターの入力欄から全画像に追加
