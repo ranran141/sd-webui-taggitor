@@ -6,17 +6,22 @@ Stable Diffusion WebUI Forge NEO 向けのタグ管理拡張機能です
 
 ## 機能
 
-### 参照モード
-- 画像をD&Dまたはファイル選択で読み込み、タグを確認
-- WD14モデルで解析し、結果を表示
+### Preview（参照）モード
 
-### 編集モード
-- フォルダ内の画像を一覧表示
-- チップ形式のタグ編集UI（追加・削除）
-- テキスト形式でのタグ直接編集
-- トリガーワードを先頭または末尾に一括追加
-- 複数画像選択時の共通タグ表示・一括削除・一括保存
-- WD14モデルで解析してタグを反映
+- 画像をクリックまたはD&Dで読み込み
+- **Danbooru**: WD14 ONNXモデルでタグを解析・表示（閾値調整可）
+- **Natural**: LM Studio（ローカルLLM）でキャプション生成
+- 結果をクリップボードにコピー、またはtxt2imgプロンプトに送信
+
+### Edit（編集）モード
+
+- **フォルダ指定で一括タグ付**: フォルダ内の全画像にまとめてタグを追加・編集
+- チップ形式でタグを確認・削除
+- 下部の入力欄からタグを一括追加
+- **Trigger words**: フッターの入力欄から全画像に追加
+- **Sort**: アルファベット順 / 頻度順のトグル切り替え
+- **Undo**: 操作取消
+- **Save**: 変更をtxtファイルに保存
 
 ## インストール方法
 
@@ -40,17 +45,31 @@ Stable Diffusion WebUI Forge NEO 向けのタグ管理拡張機能です
 
 | モデル | 特徴 |
 |--------|------|
-| [WD ViT v3](https://huggingface.co/SmilingWolf/wd-vit-tagger-v3) | 汎用・バランス型。速度と精度のバランスが良く、最初の1枚に最適（推奨） |
+| [WD ViT v3](https://huggingface.co/SmilingWolf/wd-vit-tagger-v3) | 汎用・バランス型。速度と精度のバランスが良い（推奨） |
 | [WD SwinV2 v3](https://huggingface.co/SmilingWolf/wd-swinv2-tagger-v3) | 高精度。v3世代の中で安定した検出率 |
 | [WD EVA02 Large v3](https://huggingface.co/SmilingWolf/wd-eva02-large-tagger-v3) | 最高精度・低速。精度重視の最終確認向け |
 | [WD MOAT v2](https://huggingface.co/SmilingWolf/wd-v1-4-moat-tagger-v2) | 軽量・高速。旧世代だが動作が安定 |
 
+## Natural モードについて
+
+LM Studio がローカルで起動している必要があります。  
+設定（⚙ボタン）から LM Studio の URL と キャプション用システムプロンプトを変更できます。
+
 ## 更新履歴
 
+### v2.0.0 (2026-05-21)
+- UI 全面リニューアル
+  - Preview / Edit の2タブ構成
+  - フォルダ指定で全画像を一括タグ付
+  - チップ形式タグ編集UI（追加・削除・ソート・操作取消）
+  - トリガーワードをフッターから全画像に一括追加
+  - Sort: アルファベット順 / 頻度順トグル
+- Preview モードに Natural（LM Studio）キャプション生成を追加
+- 不要機能（Replace、Select All ボタン）を削除
+
 ### v1.1.0 (2026-05-18)
-- 参照モード追加（D&Dで画像を読み込み、タグを確認・解析）
-- タグのテキスト直接編集に対応
-- UI改善
+- 参照モード追加（D&Dで画像読み込み、タグ確認・解析）
+- UI 改善
 
 ### v1.0.0 (2026-05-18)
 - 初回リリース
