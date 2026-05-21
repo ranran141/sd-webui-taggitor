@@ -258,7 +258,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',sans-serif;
 #preview-hdr{display:flex;border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--bg2)}
 #preview-result-pnl{flex:1;display:flex;flex-direction:column;padding:10px 12px;overflow:hidden;min-height:0}
 #preview-footer{display:flex;gap:8px;justify-content:flex-end;padding:8px 12px 10px;flex-shrink:0;background:var(--bg2);border-top:1px solid var(--bd)}
-#pv-controls{padding:6px 12px;display:flex;gap:8px;align-items:center;position:relative}
+#pv-controls{padding:6px 12px;display:flex;gap:8px;align-items:center;position:relative;width:100%}
 .pv-toggle-wrap{display:flex;background:var(--bg3);border:1px solid var(--bd2);border-radius:8px;padding:2px;gap:2px;flex-shrink:0}
 .pv-toggle-btn{height:24px;padding:0 14px;background:transparent;border:none;border-radius:6px;
   font-size:12px;font-weight:600;color:var(--txt4);cursor:pointer;transition:all .15s;white-space:nowrap}
@@ -437,7 +437,7 @@ input[type=range]{accent-color:var(--sel)}
           <button class="thr-btn" onclick="pvStepThr(1)">+</button>
         </div>
         <div style="flex:1"></div>
-        <button id="pv-run-btn" class="analyze-btn" onclick="pvRun()">▶ Run</button>
+        <button id="pv-run-btn" class="analyze-btn" onclick="pvRun()">▶ Analyze</button>
         <div id="pv-progress-wrap"><div id="pv-progress-bar"></div></div>
       </div>
     </div>
@@ -451,7 +451,7 @@ input[type=range]{accent-color:var(--sel)}
 
     <!-- Preview result panel -->
     <div id="preview-result-pnl">
-      <textarea id="preview-textarea" placeholder="Run Analyze to see results..."></textarea>
+      <textarea id="preview-textarea" placeholder="Press Analyze to see results..."></textarea>
     </div>
     <div id="preview-footer">
       <button id="pv-copy-btn" class="te-btn" onclick="pvCopy()">Copy</button>
